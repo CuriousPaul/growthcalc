@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Growth Calc — Growth, Retention &amp; Virality Models</title>
+    <meta
+      name="description"
+      content="Interactive growth model calculator for growth hackers. Hybrid acquisition model with simple loss, plus a cohort-based model with retention and virality decay curves."
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+      defer
+    ></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <span class="brand-mark">▲</span>
+          <span class="brand-name">Growth Calc</span>
+        </div>
+        <nav class="tabs" role="tablist">
+          <button
+            class="tab is-active"
+            role="tab"
+            aria-selected="true"
+            data-tab="simple"
+          >
+            Simple Loss
+          </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="curves">
+            Retention &amp; Virality Curves
+          </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="about">
+            About
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <!-- ============== SIMPLE LOSS MODEL ============== -->
+      <section class="model" id="tab-simple" role="tabpanel">
+        <div class="model-head">
+          <h1>The Hybrid Model, with Simple Loss</h1>
+          <p class="model-sub">
+            Paid + non-paid + viral acquisition, with a flat monthly loss rate.
+            Useful as a sanity check before layering on retention curves.
+          </p>
+        </div>
+
+        <div class="model-grid">
+          <aside class="vars">
+            <h2>Variables</h2>
+
+            <fieldset>
+              <legend>Launch press</legend>
+              <label>
+                <span>One-time launch users</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  data-input="s_launch"
+                  value="0"
+                />
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Paid (App store)</legend>
+              <label>
+                <span>App store downloads / month</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  data-input="s_appDownloads"
+                  value="0"
+                />
+              </label>
+              <label>
+                <span>% who activate</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="s_appActivate"
+                  value="20"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label class="readonly">
+                <span>App store search growth / month</span>
+                <output data-output="s_appNet">0</output>
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Non-paid (Direct traffic)</legend>
+              <label>
+                <span>Direct traffic downloads / month</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  data-input="s_directDownloads"
+                  value="1200"
+                />
+              </label>
+              <label>
+                <span>% who activate</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="s_directActivate"
+                  value="33"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label class="readonly">
+                <span>Direct traffic growth / month</span>
+                <output data-output="s_directNet">396</output>
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Virality &amp; loss</legend>
+              <label>
+                <span>Viral factor (i × c = k)</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  data-input="s_viral"
+                  value="0.2"
+                />
+              </label>
+              <label>
+                <span>% of users lost / month</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="s_loss"
+                  value="90"
+                />
+                <em class="suffix">%</em>
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Horizon</legend>
+              <label>
+                <span>Months to project</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="60"
+                  step="1"
+                  data-input="s_months"
+                  value="12"
+                />
+              </label>
+            </fieldset>
+          </aside>
+
+          <div class="output">
+            <div class="card chart-card">
+              <h3>Users (month start)</h3>
+              <div class="chart-wrap">
+                <canvas id="chartSimpleUsers"></canvas>
+              </div>
+            </div>
+
+            <div class="card chart-card">
+              <h3>Growth channels and user loss</h3>
+              <div class="chart-wrap">
+                <canvas id="chartSimpleChannels"></canvas>
+              </div>
+            </div>
+
+            <div class="card table-card">
+              <h3>Output</h3>
+              <div class="table-wrap">
+                <table id="tableSimple">
+                  <thead>
+                    <tr>
+                      <th>Month</th>
+                      <th>Users (month start)</th>
+                      <th>Launch press</th>
+                      <th>App store</th>
+                      <th>Direct traffic</th>
+                      <th>Viral growth</th>
+                      <th>Gross growth</th>
+                      <th>Loss</th>
+                      <th>Net growth</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== RETENTION & VIRALITY CURVES MODEL ============== -->
+      <section class="model is-hidden" id="tab-curves" role="tabpanel">
+        <div class="model-head">
+          <h1>The Hybrid Model, with Retention &amp; Virality Curves</h1>
+          <p class="model-sub">
+            Cohort-based projection. Each acquisition cohort retains along a
+            curve and contributes virality that decays month-over-month.
+          </p>
+        </div>
+
+        <div class="model-grid">
+          <aside class="vars">
+            <h2>Variables</h2>
+
+            <fieldset>
+              <legend>Launch press</legend>
+              <label>
+                <span>One-time launch users</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  data-input="c_launch"
+                  value="1000"
+                />
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>App store search growth</legend>
+              <label>
+                <span>App store downloads / month</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  data-input="c_appDownloads"
+                  value="3000"
+                />
+              </label>
+              <label>
+                <span>% who activate</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_appActivate"
+                  value="60"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label class="readonly">
+                <span>Activated users / month</span>
+                <output data-output="c_appNet">1800</output>
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Direct traffic growth</legend>
+              <label>
+                <span>Direct traffic downloads / month</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  data-input="c_directDownloads"
+                  value="833"
+                />
+              </label>
+              <label>
+                <span>% who activate</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_directActivate"
+                  value="60"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label class="readonly">
+                <span>Activated users / month</span>
+                <output data-output="c_directNet">500</output>
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Virality (decay curve)</legend>
+              <label>
+                <span>Viral factor decay</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  data-input="c_viralDecay"
+                  value="0.50"
+                />
+              </label>
+              <label>
+                <span>Viral factor month 1</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  data-input="c_viral1"
+                  value="0.20"
+                />
+              </label>
+              <label class="readonly">
+                <span>Viral factor month 2</span>
+                <output data-output="c_viral2">0.10</output>
+              </label>
+              <label class="readonly">
+                <span>Viral factor month 3</span>
+                <output data-output="c_viral3">0.05</output>
+              </label>
+              <label class="readonly">
+                <span>Viral factor month 4</span>
+                <output data-output="c_viral4">0.03</output>
+              </label>
+              <label class="readonly">
+                <span>Viral factor month 5</span>
+                <output data-output="c_viral5">0.01</output>
+              </label>
+              <label class="readonly">
+                <span>Viral factor month 6</span>
+                <output data-output="c_viral6">0.01</output>
+              </label>
+              <label class="readonly highlight">
+                <span>Lifetime viral factor</span>
+                <output data-output="c_viralLifetime">0.39</output>
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Retention curve</legend>
+              <label>
+                <span>Retention month 0 → 1</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_ret1"
+                  value="65"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label>
+                <span>Retention month 0 → 2</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_ret2"
+                  value="55"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label>
+                <span>Retention month 0 → 3</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_ret3"
+                  value="51"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label>
+                <span>Retention month 0 → 4</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_ret4"
+                  value="48"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label>
+                <span>Retention month 0 → 5</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_ret5"
+                  value="44"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label>
+                <span>Retention month 0 → 6</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_ret6"
+                  value="40"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <p class="hint">
+                Months 7+ stay flat at the month 6 retention rate (steady
+                state).
+              </p>
+            </fieldset>
+
+            <fieldset>
+              <legend>Horizon</legend>
+              <label>
+                <span>Months to project</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="60"
+                  step="1"
+                  data-input="c_months"
+                  value="12"
+                />
+              </label>
+            </fieldset>
+          </aside>
+
+          <div class="output">
+            <div class="card chart-card">
+              <h3>Users (month start)</h3>
+              <div class="chart-wrap">
+                <canvas id="chartCurvesUsers"></canvas>
+              </div>
+            </div>
+
+            <div class="card chart-card">
+              <h3>Growth channels and user loss</h3>
+              <div class="chart-wrap">
+                <canvas id="chartCurvesChannels"></canvas>
+              </div>
+            </div>
+
+            <div class="card table-card">
+              <h3>Output</h3>
+              <div class="table-wrap">
+                <table id="tableCurves">
+                  <thead>
+                    <tr>
+                      <th>Month</th>
+                      <th>Users (month start)</th>
+                      <th>Launch press</th>
+                      <th>App store</th>
+                      <th>Direct traffic</th>
+                      <th>Viral growth</th>
+                      <th>Gross growth</th>
+                      <th>Loss</th>
+                      <th>Net growth</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== ABOUT ============== -->
+      <section class="model is-hidden" id="tab-about" role="tabpanel">
+        <div class="about">
+          <h1>About these models</h1>
+          <p>
+            Two classic growth-hacking models for projecting how an app's user
+            base evolves over time. Plug in your acquisition channels, your
+            virality, and your retention — see how they interact.
+          </p>
+
+          <h2>Simple Loss</h2>
+          <p>
+            Each month a flat percentage of the existing user base is lost.
+            Virality is modeled as
+            <code>viral[m] = gross_growth[m-1] × k</code>, i.e. last month's new
+            users invite their friends. Useful for a quick back-of-envelope, but
+            real retention is rarely a flat percentage.
+          </p>
+
+          <h2>Retention &amp; Virality Curves</h2>
+          <p>
+            Cohort-based. Each acquisition cohort retains along the configured
+            retention curve, and each cohort generates virality that decays
+            month-over-month. New users at the start of each month are the sum
+            of every prior cohort weighted by retention:
+          </p>
+          <pre><code>users_start[m+1] = Σ cohort[c] × retention[m+1-c]
+viral[m]         = Σ cohort[c] × retention[m-c] × viral_factor[m-c]</code></pre>
+          <p>
+            Months 7+ use the month 6 retention as a steady-state floor. Viral
+            factor decays geometrically past month 6.
+          </p>
+
+          <h2>Notes</h2>
+          <ul>
+            <li>
+              All values recompute live — there's no "calculate" button. Tweak
+              an input and the charts &amp; table update instantly.
+            </li>
+            <li>
+              Numbers in the table are rounded for display; the underlying math
+              is fractional, so totals reconcile.
+            </li>
+            <li>
+              Use the <em>Months to project</em> input at the bottom of the
+              variables column to extend the horizon.
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
