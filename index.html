@@ -34,6 +34,9 @@
           <button class="tab" role="tab" aria-selected="false" data-tab="curves">
             Retention &amp; Virality Curves
           </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="viral">
+            Viral Coefficient
+          </button>
           <button class="tab" role="tab" aria-selected="false" data-tab="about">
             About
           </button>
@@ -485,6 +488,171 @@
         </div>
       </section>
 
+      <!-- ============== VIRAL COEFFICIENT CALCULATOR ============== -->
+      <section class="model is-hidden" id="tab-viral" role="tabpanel">
+        <div class="model-head">
+          <h1>Viral Coefficient Calculator</h1>
+          <p class="model-sub">
+            How big does a viral campaign get? Each user shares with
+            <em>i</em> people; a fraction <em>c</em> of them sign up. The
+            viral coefficient <strong>K = i × c</strong> determines whether
+            growth explodes (K &gt; 1), stabilizes (K = 1), or decays toward a
+            ceiling (K &lt; 1).
+          </p>
+        </div>
+
+        <div class="model-grid">
+          <aside class="vars">
+            <h2>Variables</h2>
+
+            <fieldset>
+              <legend>Seed audience</legend>
+              <label>
+                <span>Starting subscribers</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  data-input="v_seed"
+                  value="1000"
+                />
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Sharing behavior</legend>
+              <label>
+                <span>% of users who share</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="v_participation"
+                  value="40"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label>
+                <span>Avg shares per sharer (i)</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  data-input="v_shares"
+                  value="3"
+                />
+              </label>
+              <label>
+                <span>Conversion per share (c)</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="v_conversion"
+                  value="15"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label class="readonly highlight">
+                <span>Viral coefficient (K)</span>
+                <output data-output="v_k">0.18</output>
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Time</legend>
+              <label>
+                <span>Cycle time (days)</span>
+                <input
+                  type="number"
+                  min="0.5"
+                  step="0.5"
+                  data-input="v_cycleDays"
+                  value="3"
+                />
+              </label>
+              <label>
+                <span>Campaign length (days)</span>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  data-input="v_totalDays"
+                  value="30"
+                />
+              </label>
+              <label class="readonly">
+                <span>Cycles in campaign</span>
+                <output data-output="v_cycles">10</output>
+              </label>
+            </fieldset>
+          </aside>
+
+          <div class="output">
+            <div class="card summary-card">
+              <div class="kpis">
+                <div class="kpi">
+                  <span class="kpi-label">Viral coefficient (K)</span>
+                  <span class="kpi-value" data-output="v_kpiK">—</span>
+                  <span class="kpi-hint" data-output="v_kpiKHint">—</span>
+                </div>
+                <div class="kpi">
+                  <span class="kpi-label">Total subscribers</span>
+                  <span class="kpi-value" data-output="v_kpiTotal">—</span>
+                  <span class="kpi-hint">After campaign</span>
+                </div>
+                <div class="kpi">
+                  <span class="kpi-label">Viral lift</span>
+                  <span class="kpi-value" data-output="v_kpiLift">—</span>
+                  <span class="kpi-hint">Multiple of seed</span>
+                </div>
+                <div class="kpi">
+                  <span class="kpi-label">Theoretical reach</span>
+                  <span class="kpi-value" data-output="v_kpiCeiling">—</span>
+                  <span class="kpi-hint" data-output="v_kpiCeilingHint">
+                    K &lt; 1 ceiling
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card chart-card">
+              <h3>New subscribers per cycle</h3>
+              <div class="chart-wrap">
+                <canvas id="chartViralPerCycle"></canvas>
+              </div>
+            </div>
+
+            <div class="card chart-card">
+              <h3>Cumulative subscribers</h3>
+              <div class="chart-wrap">
+                <canvas id="chartViralCumulative"></canvas>
+              </div>
+            </div>
+
+            <div class="card table-card">
+              <h3>Per-cycle output</h3>
+              <div class="table-wrap">
+                <table id="tableViral">
+                  <thead>
+                    <tr>
+                      <th>Cycle</th>
+                      <th>Day</th>
+                      <th>New subscribers</th>
+                      <th>Shares sent</th>
+                      <th>Cumulative</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ============== ABOUT ============== -->
       <section class="model is-hidden" id="tab-about" role="tabpanel">
         <div class="about">
@@ -517,6 +685,32 @@ viral[m]         = Σ cohort[c] × retention[m-c] × viral_factor[m-c]</code></p
             Months 7+ use the month 6 retention as a steady-state floor. Viral
             factor decays geometrically past month 6.
           </p>
+
+          <h2>Viral Coefficient</h2>
+          <p>
+            Per-cycle exponential model.
+            <code>K = participation × i × c</code>, where <em>i</em> is the
+            average shares per active sharer and <em>c</em> is the conversion
+            rate per share. New subscribers in cycle <em>n</em> are
+            <code>seed × Kⁿ</code>; cumulative subscribers after
+            <em>N</em> cycles are
+            <code>seed × (K^(N+1) − 1) / (K − 1)</code>.
+          </p>
+          <ul>
+            <li>
+              <strong>K &lt; 1</strong>: growth decays. Theoretical max reach
+              with infinite time is <code>seed / (1 − K)</code>.
+            </li>
+            <li>
+              <strong>K = 1</strong>: each cycle adds the same number of users
+              (linear growth, no ceiling).
+            </li>
+            <li>
+              <strong>K &gt; 1</strong>: pure exponential. In reality saturation
+              and decay kick in; layer this on top of retention curves above
+              for a realistic projection.
+            </li>
+          </ul>
 
           <h2>Notes</h2>
           <ul>

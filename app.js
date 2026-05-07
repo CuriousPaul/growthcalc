@@ -195,6 +195,64 @@
     return rows;
   }
 
+  /**
+   * Viral coefficient (K-factor) model.
+   *
+   *   K = participation × shares × conversion
+   *
+   *   newUsers[0] = seed                          // cycle 0 = the seed itself
+   *   newUsers[n] = newUsers[n-1] × K             // each cycle multiplies by K
+   *   shares[n]   = newUsers[n] × participation × shares
+   *   cumulative[n] = Σ newUsers[0..n]
+   *
+   * Closed-form cumulative after N cycles:
+   *   K = 1 → seed × (N + 1)
+   *   else → seed × (K^(N+1) - 1) / (K - 1)
+   *
+   * Theoretical infinite-time reach (only meaningful for K < 1):
+   *   seed / (1 - K)
+   */
+  function computeViral({
+    seed,
+    participation, // fraction
+    shares, // shares per sharer
+    conversion, // fraction
+    cycleDays,
+    totalDays,
+  }) {
+    const K = participation * shares * conversion;
+    const cycles = Math.max(0, Math.floor(totalDays / cycleDays));
+
+    const rows = [];
+    let prevNew = seed;
+    let cumulative = seed;
+
+    rows.push({
+      cycle: 0,
+      day: 0,
+      newUsers: seed,
+      shares: seed * participation * shares,
+      cumulative,
+    });
+
+    for (let n = 1; n <= cycles; n++) {
+      const newUsers = prevNew * K;
+      cumulative += newUsers;
+      rows.push({
+        cycle: n,
+        day: n * cycleDays,
+        newUsers,
+        shares: newUsers * participation * shares,
+        cumulative,
+      });
+      prevNew = newUsers;
+    }
+
+    const ceiling = K < 1 ? seed / (1 - K) : Infinity;
+
+    return { K, cycles, rows, ceiling };
+  }
+
   // ---------- Charts ----------
 
   const charts = {
@@ -202,6 +260,8 @@
     simpleChannels: null,
     curvesUsers: null,
     curvesChannels: null,
+    viralPerCycle: null,
+    viralCumulative: null,
   };
 
   const COLORS = {
@@ -336,6 +396,75 @@
     });
   }
 
+  function ensureViralPerCycleChart(rows) {
+    const ctx = document
+      .getElementById("chartViralPerCycle")
+      .getContext("2d");
+    const labels = rows.map((r) => r.cycle);
+    const data = rows.map((r) => r.newUsers);
+
+    if (charts.viralPerCycle) {
+      charts.viralPerCycle.data.labels = labels;
+      charts.viralPerCycle.data.datasets[0].data = data;
+      charts.viralPerCycle.update();
+      return;
+    }
+    const opts = baseChartOpts();
+    opts.scales.x.title.text = "Cycle";
+    charts.viralPerCycle = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "New subscribers",
+            data,
+            backgroundColor: COLORS.viral + "cc",
+            borderColor: COLORS.viral,
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: opts,
+    });
+  }
+
+  function ensureViralCumulativeChart(rows) {
+    const ctx = document
+      .getElementById("chartViralCumulative")
+      .getContext("2d");
+    const labels = rows.map((r) => r.cycle);
+    const data = rows.map((r) => r.cumulative);
+
+    if (charts.viralCumulative) {
+      charts.viralCumulative.data.labels = labels;
+      charts.viralCumulative.data.datasets[0].data = data;
+      charts.viralCumulative.update();
+      return;
+    }
+    const opts = baseChartOpts();
+    opts.scales.x.title.text = "Cycle";
+    charts.viralCumulative = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Cumulative subscribers",
+            data,
+            borderColor: COLORS.users,
+            backgroundColor: COLORS.users + "22",
+            tension: 0.25,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            fill: true,
+          },
+        ],
+      },
+      options: opts,
+    });
+  }
+
   // ---------- Tables ----------
 
   function renderTable(tbodySel, rows) {
@@ -457,6 +586,75 @@
     renderTable("#tableCurves tbody", rows);
   }
 
+  function renderViralTable(rows) {
+    const tbody = $("#tableViral tbody");
+    tbody.innerHTML = rows
+      .map(
+        (r) => `
+        <tr>
+          <td>${r.cycle}</td>
+          <td>${Math.round(r.day).toLocaleString("en-US")}</td>
+          <td>${fmtInt(r.newUsers)}</td>
+          <td>${fmtInt(r.shares)}</td>
+          <td>${fmtInt(r.cumulative)}</td>
+        </tr>`,
+      )
+      .join("");
+  }
+
+  function recomputeViral() {
+    const seed = num("v_seed");
+    const participation = num("v_participation") / 100;
+    const shares = num("v_shares");
+    const conversion = num("v_conversion") / 100;
+    const cycleDays = Math.max(0.5, num("v_cycleDays"));
+    const totalDays = Math.max(1, num("v_totalDays"));
+
+    const result = computeViral({
+      seed,
+      participation,
+      shares,
+      conversion,
+      cycleDays,
+      totalDays,
+    });
+
+    setOutput("v_k", result.K.toFixed(2));
+    setOutput("v_cycles", result.cycles);
+
+    // KPIs
+    const kpiK = $('[data-output="v_kpiK"]');
+    kpiK.textContent = result.K.toFixed(2);
+    kpiK.classList.remove("is-positive", "is-negative", "is-accent");
+    if (result.K > 1) kpiK.classList.add("is-positive");
+    else if (result.K < 1) kpiK.classList.add("is-negative");
+    else kpiK.classList.add("is-accent");
+
+    let kHint;
+    if (result.K > 1) kHint = "Exponential growth";
+    else if (result.K === 1) kHint = "Linear growth";
+    else kHint = "Decaying — bounded reach";
+    setOutput("v_kpiKHint", kHint);
+
+    const total = result.rows[result.rows.length - 1]?.cumulative ?? seed;
+    setOutput("v_kpiTotal", fmtInt(total));
+
+    const lift = seed > 0 ? total / seed : 0;
+    setOutput("v_kpiLift", `${lift.toFixed(2)}×`);
+
+    if (isFinite(result.ceiling)) {
+      setOutput("v_kpiCeiling", fmtInt(result.ceiling));
+      setOutput("v_kpiCeilingHint", `seed / (1 − K)`);
+    } else {
+      setOutput("v_kpiCeiling", "∞");
+      setOutput("v_kpiCeilingHint", "Unbounded (K ≥ 1)");
+    }
+
+    ensureViralPerCycleChart(result.rows);
+    ensureViralCumulativeChart(result.rows);
+    renderViralTable(result.rows);
+  }
+
   // ---------- Wire up ----------
 
   function attachInputs(prefix, recompute) {
@@ -468,8 +666,10 @@
 
   attachInputs("s_", recomputeSimple);
   attachInputs("c_", recomputeCurves);
+  attachInputs("v_", recomputeViral);
 
   // Initial render.
   recomputeSimple();
   recomputeCurves();
+  recomputeViral();
 })();
