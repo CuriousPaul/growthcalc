@@ -3,9 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Growth Calc — Growth, Retention &amp; Virality Models</title>
+    <title data-i18n="meta.title">Growth Calc — Growth, Retention &amp; Virality Models</title>
     <meta
       name="description"
+      data-i18n-attr="content"
+      data-i18n="meta.description"
       content="Interactive growth model calculator for growth hackers. Hybrid acquisition model with simple loss, plus a cohort-based model with retention and virality decay curves."
     />
     <link rel="stylesheet" href="styles.css" />
@@ -20,7 +22,7 @@
       <div class="topbar-inner">
         <div class="brand">
           <span class="brand-mark">▲</span>
-          <span class="brand-name">Growth Calc</span>
+          <span class="brand-name" data-i18n="brand.name">Growth Calc</span>
         </div>
         <nav class="tabs" role="tablist">
           <button
@@ -28,19 +30,42 @@
             role="tab"
             aria-selected="true"
             data-tab="simple"
+            data-i18n="tabs.simple"
           >
             Simple Loss
           </button>
-          <button class="tab" role="tab" aria-selected="false" data-tab="curves">
+          <button
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            data-tab="curves"
+            data-i18n="tabs.curves"
+          >
             Retention &amp; Virality Curves
           </button>
-          <button class="tab" role="tab" aria-selected="false" data-tab="viral">
+          <button
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            data-tab="viral"
+            data-i18n="tabs.viral"
+          >
             Viral Coefficient
           </button>
-          <button class="tab" role="tab" aria-selected="false" data-tab="about">
+          <button
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            data-tab="about"
+            data-i18n="tabs.about"
+          >
             About
           </button>
         </nav>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button class="lang is-active" data-lang="en">EN</button>
+          <button class="lang" data-lang="ko">한국어</button>
+        </div>
       </div>
     </header>
 
@@ -48,8 +73,8 @@
       <!-- ============== SIMPLE LOSS MODEL ============== -->
       <section class="model" id="tab-simple" role="tabpanel">
         <div class="model-head">
-          <h1>The Hybrid Model, with Simple Loss</h1>
-          <p class="model-sub">
+          <h1 data-i18n="simple.title">The Hybrid Model, with Simple Loss</h1>
+          <p class="model-sub" data-i18n="simple.subtitle">
             Paid + non-paid + viral acquisition, with a flat monthly loss rate.
             Useful as a sanity check before layering on retention curves.
           </p>
@@ -57,12 +82,12 @@
 
         <div class="model-grid">
           <aside class="vars">
-            <h2>Variables</h2>
+            <h2 data-i18n="vars.title">Variables</h2>
 
             <fieldset>
-              <legend>Launch press</legend>
+              <legend data-i18n="vars.launch">Launch press</legend>
               <label>
-                <span>One-time launch users</span>
+                <span data-i18n="vars.launchUsers">One-time launch users</span>
                 <input
                   type="number"
                   min="0"
@@ -74,9 +99,11 @@
             </fieldset>
 
             <fieldset>
-              <legend>Paid (App store)</legend>
+              <legend data-i18n="vars.paid">Paid (App store)</legend>
               <label>
-                <span>App store downloads / month</span>
+                <span data-i18n="vars.appDownloads"
+                  >App store downloads / month</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -86,7 +113,7 @@
                 />
               </label>
               <label>
-                <span>% who activate</span>
+                <span data-i18n="vars.activate">% who activate</span>
                 <input
                   type="number"
                   min="0"
@@ -98,15 +125,19 @@
                 <em class="suffix">%</em>
               </label>
               <label class="readonly">
-                <span>App store search growth / month</span>
+                <span data-i18n="vars.appNet"
+                  >App store search growth / month</span
+                >
                 <output data-output="s_appNet">0</output>
               </label>
             </fieldset>
 
             <fieldset>
-              <legend>Non-paid (Direct traffic)</legend>
+              <legend data-i18n="vars.nonpaid">Non-paid (Direct traffic)</legend>
               <label>
-                <span>Direct traffic downloads / month</span>
+                <span data-i18n="vars.directDownloads"
+                  >Direct traffic downloads / month</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -116,7 +147,7 @@
                 />
               </label>
               <label>
-                <span>% who activate</span>
+                <span data-i18n="vars.activate">% who activate</span>
                 <input
                   type="number"
                   min="0"
@@ -128,15 +159,19 @@
                 <em class="suffix">%</em>
               </label>
               <label class="readonly">
-                <span>Direct traffic growth / month</span>
+                <span data-i18n="vars.directNet"
+                  >Direct traffic growth / month</span
+                >
                 <output data-output="s_directNet">396</output>
               </label>
             </fieldset>
 
             <fieldset>
-              <legend>Virality &amp; loss</legend>
+              <legend data-i18n="vars.viralityLoss">Virality &amp; loss</legend>
               <label>
-                <span>Viral factor (i × c = k)</span>
+                <span data-i18n="vars.viralFactor"
+                  >Viral factor (i × c = k)</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -146,7 +181,7 @@
                 />
               </label>
               <label>
-                <span>% of users lost / month</span>
+                <span data-i18n="vars.lossPct">% of users lost / month</span>
                 <input
                   type="number"
                   min="0"
@@ -160,9 +195,9 @@
             </fieldset>
 
             <fieldset>
-              <legend>Horizon</legend>
+              <legend data-i18n="vars.horizon">Horizon</legend>
               <label>
-                <span>Months to project</span>
+                <span data-i18n="vars.months">Months to project</span>
                 <input
                   type="number"
                   min="1"
@@ -177,34 +212,34 @@
 
           <div class="output">
             <div class="card chart-card">
-              <h3>Users (month start)</h3>
+              <h3 data-i18n="cards.users">Users (month start)</h3>
               <div class="chart-wrap">
                 <canvas id="chartSimpleUsers"></canvas>
               </div>
             </div>
 
             <div class="card chart-card">
-              <h3>Growth channels and user loss</h3>
+              <h3 data-i18n="cards.channels">Growth channels and user loss</h3>
               <div class="chart-wrap">
                 <canvas id="chartSimpleChannels"></canvas>
               </div>
             </div>
 
             <div class="card table-card">
-              <h3>Output</h3>
+              <h3 data-i18n="cards.output">Output</h3>
               <div class="table-wrap">
                 <table id="tableSimple">
                   <thead>
                     <tr>
-                      <th>Month</th>
-                      <th>Users (month start)</th>
-                      <th>Launch press</th>
-                      <th>App store</th>
-                      <th>Direct traffic</th>
-                      <th>Viral growth</th>
-                      <th>Gross growth</th>
-                      <th>Loss</th>
-                      <th>Net growth</th>
+                      <th data-i18n="cols.month">Month</th>
+                      <th data-i18n="cols.users">Users (month start)</th>
+                      <th data-i18n="cols.launch">Launch press</th>
+                      <th data-i18n="cols.appstore">App store</th>
+                      <th data-i18n="cols.direct">Direct traffic</th>
+                      <th data-i18n="cols.viral">Viral growth</th>
+                      <th data-i18n="cols.gross">Gross growth</th>
+                      <th data-i18n="cols.loss">Loss</th>
+                      <th data-i18n="cols.net">Net growth</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -218,8 +253,10 @@
       <!-- ============== RETENTION & VIRALITY CURVES MODEL ============== -->
       <section class="model is-hidden" id="tab-curves" role="tabpanel">
         <div class="model-head">
-          <h1>The Hybrid Model, with Retention &amp; Virality Curves</h1>
-          <p class="model-sub">
+          <h1 data-i18n="curves.title">
+            The Hybrid Model, with Retention &amp; Virality Curves
+          </h1>
+          <p class="model-sub" data-i18n="curves.subtitle">
             Cohort-based projection. Each acquisition cohort retains along a
             curve and contributes virality that decays month-over-month.
           </p>
@@ -227,12 +264,12 @@
 
         <div class="model-grid">
           <aside class="vars">
-            <h2>Variables</h2>
+            <h2 data-i18n="vars.title">Variables</h2>
 
             <fieldset>
-              <legend>Launch press</legend>
+              <legend data-i18n="vars.launch">Launch press</legend>
               <label>
-                <span>One-time launch users</span>
+                <span data-i18n="vars.launchUsers">One-time launch users</span>
                 <input
                   type="number"
                   min="0"
@@ -244,9 +281,13 @@
             </fieldset>
 
             <fieldset>
-              <legend>App store search growth</legend>
+              <legend data-i18n="curves.appStoreGrowth">
+                App store search growth
+              </legend>
               <label>
-                <span>App store downloads / month</span>
+                <span data-i18n="vars.appDownloads"
+                  >App store downloads / month</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -256,7 +297,7 @@
                 />
               </label>
               <label>
-                <span>% who activate</span>
+                <span data-i18n="vars.activate">% who activate</span>
                 <input
                   type="number"
                   min="0"
@@ -268,15 +309,19 @@
                 <em class="suffix">%</em>
               </label>
               <label class="readonly">
-                <span>Activated users / month</span>
+                <span data-i18n="curves.activated">Activated users / month</span>
                 <output data-output="c_appNet">1800</output>
               </label>
             </fieldset>
 
             <fieldset>
-              <legend>Direct traffic growth</legend>
+              <legend data-i18n="curves.directGrowth">
+                Direct traffic growth
+              </legend>
               <label>
-                <span>Direct traffic downloads / month</span>
+                <span data-i18n="vars.directDownloads"
+                  >Direct traffic downloads / month</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -286,7 +331,7 @@
                 />
               </label>
               <label>
-                <span>% who activate</span>
+                <span data-i18n="vars.activate">% who activate</span>
                 <input
                   type="number"
                   min="0"
@@ -298,15 +343,17 @@
                 <em class="suffix">%</em>
               </label>
               <label class="readonly">
-                <span>Activated users / month</span>
+                <span data-i18n="curves.activated">Activated users / month</span>
                 <output data-output="c_directNet">500</output>
               </label>
             </fieldset>
 
             <fieldset>
-              <legend>Virality (decay curve)</legend>
+              <legend data-i18n="curves.virality">Virality (decay curve)</legend>
               <label>
-                <span>% of users who share</span>
+                <span data-i18n="curves.participation"
+                  >% of users who share</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -318,7 +365,9 @@
                 <em class="suffix">%</em>
               </label>
               <label>
-                <span>Avg shares per sharer (i)</span>
+                <span data-i18n="curves.shares"
+                  >Avg shares per sharer (i)</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -328,7 +377,9 @@
                 />
               </label>
               <label>
-                <span>Conversion per share (c)</span>
+                <span data-i18n="curves.conversion"
+                  >Conversion per share (c)</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -340,11 +391,11 @@
                 <em class="suffix">%</em>
               </label>
               <label class="readonly highlight">
-                <span>Viral factor month 1 (K)</span>
+                <span data-i18n="curves.viral1">Viral factor month 1 (K)</span>
                 <output data-output="c_viral1">0.20</output>
               </label>
               <label>
-                <span>Viral factor decay</span>
+                <span data-i18n="curves.viralDecay">Viral factor decay</span>
                 <input
                   type="number"
                   min="0"
@@ -355,35 +406,35 @@
                 />
               </label>
               <label class="readonly">
-                <span>Viral factor month 2</span>
+                <span data-i18n="curves.viral2">Viral factor month 2</span>
                 <output data-output="c_viral2">0.10</output>
               </label>
               <label class="readonly">
-                <span>Viral factor month 3</span>
+                <span data-i18n="curves.viral3">Viral factor month 3</span>
                 <output data-output="c_viral3">0.05</output>
               </label>
               <label class="readonly">
-                <span>Viral factor month 4</span>
+                <span data-i18n="curves.viral4">Viral factor month 4</span>
                 <output data-output="c_viral4">0.03</output>
               </label>
               <label class="readonly">
-                <span>Viral factor month 5</span>
+                <span data-i18n="curves.viral5">Viral factor month 5</span>
                 <output data-output="c_viral5">0.01</output>
               </label>
               <label class="readonly">
-                <span>Viral factor month 6</span>
+                <span data-i18n="curves.viral6">Viral factor month 6</span>
                 <output data-output="c_viral6">0.01</output>
               </label>
               <label class="readonly highlight">
-                <span>Lifetime viral factor</span>
+                <span data-i18n="curves.lifetime">Lifetime viral factor</span>
                 <output data-output="c_viralLifetime">0.39</output>
               </label>
             </fieldset>
 
             <fieldset>
-              <legend>Retention curve</legend>
+              <legend data-i18n="curves.retention">Retention curve</legend>
               <label>
-                <span>Retention month 0 → 1</span>
+                <span data-i18n="curves.ret1">Retention month 0 → 1</span>
                 <input
                   type="number"
                   min="0"
@@ -395,7 +446,7 @@
                 <em class="suffix">%</em>
               </label>
               <label>
-                <span>Retention month 0 → 2</span>
+                <span data-i18n="curves.ret2">Retention month 0 → 2</span>
                 <input
                   type="number"
                   min="0"
@@ -407,7 +458,7 @@
                 <em class="suffix">%</em>
               </label>
               <label>
-                <span>Retention month 0 → 3</span>
+                <span data-i18n="curves.ret3">Retention month 0 → 3</span>
                 <input
                   type="number"
                   min="0"
@@ -419,7 +470,7 @@
                 <em class="suffix">%</em>
               </label>
               <label>
-                <span>Retention month 0 → 4</span>
+                <span data-i18n="curves.ret4">Retention month 0 → 4</span>
                 <input
                   type="number"
                   min="0"
@@ -431,7 +482,7 @@
                 <em class="suffix">%</em>
               </label>
               <label>
-                <span>Retention month 0 → 5</span>
+                <span data-i18n="curves.ret5">Retention month 0 → 5</span>
                 <input
                   type="number"
                   min="0"
@@ -443,7 +494,7 @@
                 <em class="suffix">%</em>
               </label>
               <label>
-                <span>Retention month 0 → 6</span>
+                <span data-i18n="curves.ret6">Retention month 0 → 6</span>
                 <input
                   type="number"
                   min="0"
@@ -454,16 +505,16 @@
                 />
                 <em class="suffix">%</em>
               </label>
-              <p class="hint">
+              <p class="hint" data-i18n="curves.retentionHint">
                 Months 7+ stay flat at the month 6 retention rate (steady
                 state).
               </p>
             </fieldset>
 
             <fieldset>
-              <legend>Horizon</legend>
+              <legend data-i18n="vars.horizon">Horizon</legend>
               <label>
-                <span>Months to project</span>
+                <span data-i18n="vars.months">Months to project</span>
                 <input
                   type="number"
                   min="1"
@@ -478,34 +529,34 @@
 
           <div class="output">
             <div class="card chart-card">
-              <h3>Users (month start)</h3>
+              <h3 data-i18n="cards.users">Users (month start)</h3>
               <div class="chart-wrap">
                 <canvas id="chartCurvesUsers"></canvas>
               </div>
             </div>
 
             <div class="card chart-card">
-              <h3>Growth channels and user loss</h3>
+              <h3 data-i18n="cards.channels">Growth channels and user loss</h3>
               <div class="chart-wrap">
                 <canvas id="chartCurvesChannels"></canvas>
               </div>
             </div>
 
             <div class="card table-card">
-              <h3>Output</h3>
+              <h3 data-i18n="cards.output">Output</h3>
               <div class="table-wrap">
                 <table id="tableCurves">
                   <thead>
                     <tr>
-                      <th>Month</th>
-                      <th>Users (month start)</th>
-                      <th>Launch press</th>
-                      <th>App store</th>
-                      <th>Direct traffic</th>
-                      <th>Viral growth</th>
-                      <th>Gross growth</th>
-                      <th>Loss</th>
-                      <th>Net growth</th>
+                      <th data-i18n="cols.month">Month</th>
+                      <th data-i18n="cols.users">Users (month start)</th>
+                      <th data-i18n="cols.launch">Launch press</th>
+                      <th data-i18n="cols.appstore">App store</th>
+                      <th data-i18n="cols.direct">Direct traffic</th>
+                      <th data-i18n="cols.viral">Viral growth</th>
+                      <th data-i18n="cols.gross">Gross growth</th>
+                      <th data-i18n="cols.loss">Loss</th>
+                      <th data-i18n="cols.net">Net growth</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -519,8 +570,8 @@
       <!-- ============== VIRAL COEFFICIENT CALCULATOR ============== -->
       <section class="model is-hidden" id="tab-viral" role="tabpanel">
         <div class="model-head">
-          <h1>Viral Coefficient Calculator</h1>
-          <p class="model-sub">
+          <h1 data-i18n="viral.title">Viral Coefficient Calculator</h1>
+          <p class="model-sub" data-i18n="viral.subtitle">
             How big does a viral campaign get? Each user shares with
             <em>i</em> people; a fraction <em>c</em> of them sign up. The
             viral coefficient <strong>K = i × c</strong> determines whether
@@ -531,12 +582,12 @@
 
         <div class="model-grid">
           <aside class="vars">
-            <h2>Variables</h2>
+            <h2 data-i18n="vars.title">Variables</h2>
 
             <fieldset>
-              <legend>Seed audience</legend>
+              <legend data-i18n="viral.seedAudience">Seed audience</legend>
               <label>
-                <span>Starting subscribers</span>
+                <span data-i18n="viral.startingSubs">Starting subscribers</span>
                 <input
                   type="number"
                   min="0"
@@ -548,9 +599,11 @@
             </fieldset>
 
             <fieldset>
-              <legend>Sharing behavior</legend>
+              <legend data-i18n="viral.sharingBehavior">Sharing behavior</legend>
               <label>
-                <span>% of users who share</span>
+                <span data-i18n="curves.participation"
+                  >% of users who share</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -562,7 +615,9 @@
                 <em class="suffix">%</em>
               </label>
               <label>
-                <span>Avg shares per sharer (i)</span>
+                <span data-i18n="curves.shares"
+                  >Avg shares per sharer (i)</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -572,7 +627,9 @@
                 />
               </label>
               <label>
-                <span>Conversion per share (c)</span>
+                <span data-i18n="curves.conversion"
+                  >Conversion per share (c)</span
+                >
                 <input
                   type="number"
                   min="0"
@@ -584,15 +641,15 @@
                 <em class="suffix">%</em>
               </label>
               <label class="readonly highlight">
-                <span>Viral coefficient (K)</span>
+                <span data-i18n="viral.kCoefficient">Viral coefficient (K)</span>
                 <output data-output="v_k">0.18</output>
               </label>
             </fieldset>
 
             <fieldset>
-              <legend>Time</legend>
+              <legend data-i18n="viral.time">Time</legend>
               <label>
-                <span>Cycle time (days)</span>
+                <span data-i18n="viral.cycleTime">Cycle time (days)</span>
                 <input
                   type="number"
                   min="0.5"
@@ -602,7 +659,9 @@
                 />
               </label>
               <label>
-                <span>Campaign length (days)</span>
+                <span data-i18n="viral.campaignLength"
+                  >Campaign length (days)</span
+                >
                 <input
                   type="number"
                   min="1"
@@ -612,7 +671,9 @@
                 />
               </label>
               <label class="readonly">
-                <span>Cycles in campaign</span>
+                <span data-i18n="viral.cyclesInCampaign"
+                  >Cycles in campaign</span
+                >
                 <output data-output="v_cycles">10</output>
               </label>
             </fieldset>
@@ -622,55 +683,65 @@
             <div class="card summary-card">
               <div class="kpis">
                 <div class="kpi">
-                  <span class="kpi-label">Viral coefficient (K)</span>
+                  <span class="kpi-label" data-i18n="viral.kCoefficient"
+                    >Viral coefficient (K)</span
+                  >
                   <span class="kpi-value" data-output="v_kpiK">—</span>
                   <span class="kpi-hint" data-output="v_kpiKHint">—</span>
                 </div>
                 <div class="kpi">
-                  <span class="kpi-label">Total subscribers</span>
+                  <span class="kpi-label" data-i18n="viral.kpiTotal"
+                    >Total subscribers</span
+                  >
                   <span class="kpi-value" data-output="v_kpiTotal">—</span>
-                  <span class="kpi-hint">After campaign</span>
+                  <span class="kpi-hint" data-i18n="viral.kpiTotalHint"
+                    >After campaign</span
+                  >
                 </div>
                 <div class="kpi">
-                  <span class="kpi-label">Viral lift</span>
+                  <span class="kpi-label" data-i18n="viral.kpiLift"
+                    >Viral lift</span
+                  >
                   <span class="kpi-value" data-output="v_kpiLift">—</span>
-                  <span class="kpi-hint">Multiple of seed</span>
+                  <span class="kpi-hint" data-i18n="viral.kpiLiftHint"
+                    >Multiple of seed</span
+                  >
                 </div>
                 <div class="kpi">
-                  <span class="kpi-label">Theoretical reach</span>
+                  <span class="kpi-label" data-i18n="viral.kpiCeiling"
+                    >Theoretical reach</span
+                  >
                   <span class="kpi-value" data-output="v_kpiCeiling">—</span>
-                  <span class="kpi-hint" data-output="v_kpiCeilingHint">
-                    K &lt; 1 ceiling
-                  </span>
+                  <span class="kpi-hint" data-output="v_kpiCeilingHint">—</span>
                 </div>
               </div>
             </div>
 
             <div class="card chart-card">
-              <h3>New subscribers per cycle</h3>
+              <h3 data-i18n="viral.perCycleChart">New subscribers per cycle</h3>
               <div class="chart-wrap">
                 <canvas id="chartViralPerCycle"></canvas>
               </div>
             </div>
 
             <div class="card chart-card">
-              <h3>Cumulative subscribers</h3>
+              <h3 data-i18n="viral.cumulativeChart">Cumulative subscribers</h3>
               <div class="chart-wrap">
                 <canvas id="chartViralCumulative"></canvas>
               </div>
             </div>
 
             <div class="card table-card">
-              <h3>Per-cycle output</h3>
+              <h3 data-i18n="viral.perCycleOutput">Per-cycle output</h3>
               <div class="table-wrap">
                 <table id="tableViral">
                   <thead>
                     <tr>
-                      <th>Cycle</th>
-                      <th>Day</th>
-                      <th>New subscribers</th>
-                      <th>Shares sent</th>
-                      <th>Cumulative</th>
+                      <th data-i18n="viral.cycle">Cycle</th>
+                      <th data-i18n="viral.day">Day</th>
+                      <th data-i18n="viral.newSubs">New subscribers</th>
+                      <th data-i18n="viral.sharesSent">Shares sent</th>
+                      <th data-i18n="viral.cumulative">Cumulative</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -684,15 +755,15 @@
       <!-- ============== ABOUT ============== -->
       <section class="model is-hidden" id="tab-about" role="tabpanel">
         <div class="about">
-          <h1>About these models</h1>
-          <p>
+          <h1 data-i18n="about.title">About these models</h1>
+          <p data-i18n="about.intro">
             Two classic growth-hacking models for projecting how an app's user
             base evolves over time. Plug in your acquisition channels, your
             virality, and your retention — see how they interact.
           </p>
 
-          <h2>Simple Loss</h2>
-          <p>
+          <h2 data-i18n="about.simpleH">Simple Loss</h2>
+          <p data-i18n="about.simpleP">
             Each month a flat percentage of the existing user base is lost.
             Virality is modeled as
             <code>viral[m] = gross_growth[m-1] × k</code>, i.e. last month's new
@@ -700,8 +771,8 @@
             real retention is rarely a flat percentage.
           </p>
 
-          <h2>Retention &amp; Virality Curves</h2>
-          <p>
+          <h2 data-i18n="about.curvesH">Retention &amp; Virality Curves</h2>
+          <p data-i18n="about.curvesP1">
             Cohort-based. Each acquisition cohort retains along the configured
             retention curve, and each cohort generates virality that decays
             month-over-month. New users at the start of each month are the sum
@@ -709,13 +780,13 @@
           </p>
           <pre><code>users_start[m+1] = Σ cohort[c] × retention[m+1-c]
 viral[m]         = Σ cohort[c] × retention[m-c] × viral_factor[m-c]</code></pre>
-          <p>
+          <p data-i18n="about.curvesP2">
             Months 7+ use the month 6 retention as a steady-state floor. Viral
             factor decays geometrically past month 6.
           </p>
 
-          <h2>Viral Coefficient</h2>
-          <p>
+          <h2 data-i18n="about.viralH">Viral Coefficient</h2>
+          <p data-i18n="about.viralP">
             Per-cycle exponential model.
             <code>K = participation × i × c</code>, where <em>i</em> is the
             average shares per active sharer and <em>c</em> is the conversion
@@ -725,32 +796,32 @@ viral[m]         = Σ cohort[c] × retention[m-c] × viral_factor[m-c]</code></p
             <code>seed × (K^(N+1) − 1) / (K − 1)</code>.
           </p>
           <ul>
-            <li>
+            <li data-i18n="about.viralKlt1">
               <strong>K &lt; 1</strong>: growth decays. Theoretical max reach
               with infinite time is <code>seed / (1 − K)</code>.
             </li>
-            <li>
+            <li data-i18n="about.viralKeq1">
               <strong>K = 1</strong>: each cycle adds the same number of users
               (linear growth, no ceiling).
             </li>
-            <li>
+            <li data-i18n="about.viralKgt1">
               <strong>K &gt; 1</strong>: pure exponential. In reality saturation
               and decay kick in; layer this on top of retention curves above
               for a realistic projection.
             </li>
           </ul>
 
-          <h2>Notes</h2>
+          <h2 data-i18n="about.notesH">Notes</h2>
           <ul>
-            <li>
+            <li data-i18n="about.note1">
               All values recompute live — there's no "calculate" button. Tweak
               an input and the charts &amp; table update instantly.
             </li>
-            <li>
+            <li data-i18n="about.note2">
               Numbers in the table are rounded for display; the underlying math
               is fractional, so totals reconcile.
             </li>
-            <li>
+            <li data-i18n="about.note3">
               Use the <em>Months to project</em> input at the bottom of the
               variables column to extend the horizon.
             </li>

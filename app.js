@@ -1,6 +1,302 @@
 (() => {
   "use strict";
 
+  // ---------- i18n ----------
+
+  const TRANSLATIONS = {
+    en: {
+      "meta.title": "Growth Calc — Growth, Retention & Virality Models",
+      "meta.description":
+        "Interactive growth model calculator for growth hackers. Hybrid acquisition model with simple loss, plus a cohort-based model with retention and virality decay curves.",
+      "brand.name": "Growth Calc",
+
+      "tabs.simple": "Simple Loss",
+      "tabs.curves": "Retention &amp; Virality Curves",
+      "tabs.viral": "Viral Coefficient",
+      "tabs.about": "About",
+
+      "vars.title": "Variables",
+      "vars.launch": "Launch press",
+      "vars.launchUsers": "One-time launch users",
+      "vars.paid": "Paid (App store)",
+      "vars.nonpaid": "Non-paid (Direct traffic)",
+      "vars.appDownloads": "App store downloads / month",
+      "vars.directDownloads": "Direct traffic downloads / month",
+      "vars.activate": "% who activate",
+      "vars.appNet": "App store search growth / month",
+      "vars.directNet": "Direct traffic growth / month",
+      "vars.viralityLoss": "Virality &amp; loss",
+      "vars.viralFactor": "Viral factor (i × c = k)",
+      "vars.lossPct": "% of users lost / month",
+      "vars.horizon": "Horizon",
+      "vars.months": "Months to project",
+
+      "cards.users": "Users (month start)",
+      "cards.channels": "Growth channels and user loss",
+      "cards.output": "Output",
+
+      "cols.month": "Month",
+      "cols.users": "Users (month start)",
+      "cols.launch": "Launch press",
+      "cols.appstore": "App store",
+      "cols.direct": "Direct traffic",
+      "cols.viral": "Viral growth",
+      "cols.gross": "Gross growth",
+      "cols.loss": "Loss",
+      "cols.net": "Net growth",
+
+      "simple.title": "The Hybrid Model, with Simple Loss",
+      "simple.subtitle":
+        "Paid + non-paid + viral acquisition, with a flat monthly loss rate. Useful as a sanity check before layering on retention curves.",
+
+      "curves.title":
+        "The Hybrid Model, with Retention &amp; Virality Curves",
+      "curves.subtitle":
+        "Cohort-based projection. Each acquisition cohort retains along a curve and contributes virality that decays month-over-month.",
+      "curves.appStoreGrowth": "App store search growth",
+      "curves.directGrowth": "Direct traffic growth",
+      "curves.activated": "Activated users / month",
+      "curves.virality": "Virality (decay curve)",
+      "curves.participation": "% of users who share",
+      "curves.shares": "Avg shares per sharer (i)",
+      "curves.conversion": "Conversion per share (c)",
+      "curves.viral1": "Viral factor month 1 (K)",
+      "curves.viralDecay": "Viral factor decay",
+      "curves.viral2": "Viral factor month 2",
+      "curves.viral3": "Viral factor month 3",
+      "curves.viral4": "Viral factor month 4",
+      "curves.viral5": "Viral factor month 5",
+      "curves.viral6": "Viral factor month 6",
+      "curves.lifetime": "Lifetime viral factor",
+      "curves.retention": "Retention curve",
+      "curves.ret1": "Retention month 0 → 1",
+      "curves.ret2": "Retention month 0 → 2",
+      "curves.ret3": "Retention month 0 → 3",
+      "curves.ret4": "Retention month 0 → 4",
+      "curves.ret5": "Retention month 0 → 5",
+      "curves.ret6": "Retention month 0 → 6",
+      "curves.retentionHint":
+        "Months 7+ stay flat at the month 6 retention rate (steady state).",
+
+      "viral.title": "Viral Coefficient Calculator",
+      "viral.subtitle":
+        "How big does a viral campaign get? Each user shares with <em>i</em> people; a fraction <em>c</em> of them sign up. The viral coefficient <strong>K = i × c</strong> determines whether growth explodes (K &gt; 1), stabilizes (K = 1), or decays toward a ceiling (K &lt; 1).",
+      "viral.seedAudience": "Seed audience",
+      "viral.startingSubs": "Starting subscribers",
+      "viral.sharingBehavior": "Sharing behavior",
+      "viral.kCoefficient": "Viral coefficient (K)",
+      "viral.time": "Time",
+      "viral.cycleTime": "Cycle time (days)",
+      "viral.campaignLength": "Campaign length (days)",
+      "viral.cyclesInCampaign": "Cycles in campaign",
+      "viral.kpiTotal": "Total subscribers",
+      "viral.kpiTotalHint": "After campaign",
+      "viral.kpiLift": "Viral lift",
+      "viral.kpiLiftHint": "Multiple of seed",
+      "viral.kpiCeiling": "Theoretical reach",
+      "viral.kpiCeilingBounded": "seed / (1 − K)",
+      "viral.kpiCeilingUnbounded": "Unbounded (K ≥ 1)",
+      "viral.regimeExp": "Exponential growth",
+      "viral.regimeLin": "Linear growth",
+      "viral.regimeDec": "Decaying — bounded reach",
+      "viral.perCycleChart": "New subscribers per cycle",
+      "viral.cumulativeChart": "Cumulative subscribers",
+      "viral.perCycleOutput": "Per-cycle output",
+      "viral.cycle": "Cycle",
+      "viral.day": "Day",
+      "viral.newSubs": "New subscribers",
+      "viral.sharesSent": "Shares sent",
+      "viral.cumulative": "Cumulative",
+
+      "about.title": "About these models",
+      "about.intro":
+        "Two classic growth-hacking models for projecting how an app's user base evolves over time. Plug in your acquisition channels, your virality, and your retention — see how they interact.",
+      "about.simpleH": "Simple Loss",
+      "about.simpleP":
+        "Each month a flat percentage of the existing user base is lost. Virality is modeled as <code>viral[m] = gross_growth[m-1] × k</code>, i.e. last month's new users invite their friends. Useful for a quick back-of-envelope, but real retention is rarely a flat percentage.",
+      "about.curvesH": "Retention &amp; Virality Curves",
+      "about.curvesP1":
+        "Cohort-based. Each acquisition cohort retains along the configured retention curve, and each cohort generates virality that decays month-over-month. New users at the start of each month are the sum of every prior cohort weighted by retention:",
+      "about.curvesP2":
+        "Months 7+ use the month 6 retention as a steady-state floor. Viral factor decays geometrically past month 6.",
+      "about.viralH": "Viral Coefficient",
+      "about.viralP":
+        "Per-cycle exponential model. <code>K = participation × i × c</code>, where <em>i</em> is the average shares per active sharer and <em>c</em> is the conversion rate per share. New subscribers in cycle <em>n</em> are <code>seed × Kⁿ</code>; cumulative subscribers after <em>N</em> cycles are <code>seed × (K^(N+1) − 1) / (K − 1)</code>.",
+      "about.viralKlt1":
+        "<strong>K &lt; 1</strong>: growth decays. Theoretical max reach with infinite time is <code>seed / (1 − K)</code>.",
+      "about.viralKeq1":
+        "<strong>K = 1</strong>: each cycle adds the same number of users (linear growth, no ceiling).",
+      "about.viralKgt1":
+        "<strong>K &gt; 1</strong>: pure exponential. In reality saturation and decay kick in; layer this on top of retention curves above for a realistic projection.",
+      "about.notesH": "Notes",
+      "about.note1":
+        "All values recompute live — there's no \"calculate\" button. Tweak an input and the charts &amp; table update instantly.",
+      "about.note2":
+        "Numbers in the table are rounded for display; the underlying math is fractional, so totals reconcile.",
+      "about.note3":
+        "Use the <em>Months to project</em> input at the bottom of the variables column to extend the horizon.",
+    },
+
+    ko: {
+      "meta.title": "Growth Calc — 성장, 리텐션 & 바이럴 모델",
+      "meta.description":
+        "그로스 해커를 위한 인터랙티브 성장 모델 계산기. 단순 이탈을 적용한 하이브리드 획득 모델과, 리텐션 및 바이럴 감쇠 곡선을 적용한 코호트 기반 모델을 제공합니다.",
+      "brand.name": "Growth Calc",
+
+      "tabs.simple": "단순 이탈",
+      "tabs.curves": "리텐션 & 바이럴 곡선",
+      "tabs.viral": "바이럴 계수",
+      "tabs.about": "소개",
+
+      "vars.title": "변수",
+      "vars.launch": "런칭 홍보",
+      "vars.launchUsers": "일회성 런칭 사용자",
+      "vars.paid": "유료 (앱스토어)",
+      "vars.nonpaid": "비유료 (직접 트래픽)",
+      "vars.appDownloads": "월별 앱스토어 다운로드",
+      "vars.directDownloads": "월별 직접 트래픽 다운로드",
+      "vars.activate": "활성화율",
+      "vars.appNet": "월별 앱스토어 검색 유입",
+      "vars.directNet": "월별 직접 트래픽 유입",
+      "vars.viralityLoss": "바이럴 & 이탈",
+      "vars.viralFactor": "바이럴 팩터 (i × c = k)",
+      "vars.lossPct": "월별 사용자 이탈률",
+      "vars.horizon": "예측 기간",
+      "vars.months": "예측할 개월 수",
+
+      "cards.users": "월 시작 사용자",
+      "cards.channels": "성장 채널 및 이탈",
+      "cards.output": "결과",
+
+      "cols.month": "월",
+      "cols.users": "월 시작 사용자",
+      "cols.launch": "런칭 홍보",
+      "cols.appstore": "앱스토어",
+      "cols.direct": "직접 트래픽",
+      "cols.viral": "바이럴 성장",
+      "cols.gross": "총 성장",
+      "cols.loss": "이탈",
+      "cols.net": "순 성장",
+
+      "simple.title": "단순 이탈을 적용한 하이브리드 모델",
+      "simple.subtitle":
+        "유료 + 비유료 + 바이럴 획득에 매월 일정 이탈률을 적용한 모델입니다. 리텐션 곡선을 더하기 전, 빠른 검산용으로 유용합니다.",
+
+      "curves.title": "리텐션 & 바이럴 곡선을 적용한 하이브리드 모델",
+      "curves.subtitle":
+        "코호트 기반 예측입니다. 각 획득 코호트는 곡선을 따라 잔존하며, 매월 감쇠하는 바이럴 효과를 만들어냅니다.",
+      "curves.appStoreGrowth": "앱스토어 검색 유입",
+      "curves.directGrowth": "직접 트래픽 유입",
+      "curves.activated": "월별 활성 사용자",
+      "curves.virality": "바이럴 (감쇠 곡선)",
+      "curves.participation": "공유 참여율",
+      "curves.shares": "사용자당 평균 공유 수 (i)",
+      "curves.conversion": "공유당 전환율 (c)",
+      "curves.viral1": "1개월차 바이럴 팩터 (K)",
+      "curves.viralDecay": "바이럴 팩터 감쇠",
+      "curves.viral2": "2개월차 바이럴 팩터",
+      "curves.viral3": "3개월차 바이럴 팩터",
+      "curves.viral4": "4개월차 바이럴 팩터",
+      "curves.viral5": "5개월차 바이럴 팩터",
+      "curves.viral6": "6개월차 바이럴 팩터",
+      "curves.lifetime": "누적 바이럴 팩터",
+      "curves.retention": "리텐션 곡선",
+      "curves.ret1": "0 → 1개월 리텐션",
+      "curves.ret2": "0 → 2개월 리텐션",
+      "curves.ret3": "0 → 3개월 리텐션",
+      "curves.ret4": "0 → 4개월 리텐션",
+      "curves.ret5": "0 → 5개월 리텐션",
+      "curves.ret6": "0 → 6개월 리텐션",
+      "curves.retentionHint":
+        "7개월 이후는 6개월차 리텐션을 정상 상태로 유지합니다.",
+
+      "viral.title": "바이럴 계수 계산기",
+      "viral.subtitle":
+        "바이럴 캠페인은 얼마나 커질까요? 각 사용자가 <em>i</em>명에게 공유하고, 그중 비율 <em>c</em>가 가입합니다. 바이럴 계수 <strong>K = i × c</strong>가 성장이 폭발할지(K &gt; 1), 안정될지(K = 1), 한계점을 향해 감쇠할지(K &lt; 1) 결정합니다.",
+      "viral.seedAudience": "시드 사용자",
+      "viral.startingSubs": "초기 구독자 수",
+      "viral.sharingBehavior": "공유 행동",
+      "viral.kCoefficient": "바이럴 계수 (K)",
+      "viral.time": "기간",
+      "viral.cycleTime": "사이클 주기 (일)",
+      "viral.campaignLength": "캠페인 기간 (일)",
+      "viral.cyclesInCampaign": "캠페인 내 사이클 수",
+      "viral.kpiTotal": "총 구독자",
+      "viral.kpiTotalHint": "캠페인 종료 후",
+      "viral.kpiLift": "바이럴 증폭",
+      "viral.kpiLiftHint": "시드 대비 배수",
+      "viral.kpiCeiling": "이론적 도달",
+      "viral.kpiCeilingBounded": "seed / (1 − K)",
+      "viral.kpiCeilingUnbounded": "무제한 (K ≥ 1)",
+      "viral.regimeExp": "지수 성장",
+      "viral.regimeLin": "선형 성장",
+      "viral.regimeDec": "감쇠 — 제한된 도달",
+      "viral.perCycleChart": "사이클별 신규 구독자",
+      "viral.cumulativeChart": "누적 구독자",
+      "viral.perCycleOutput": "사이클별 결과",
+      "viral.cycle": "사이클",
+      "viral.day": "일",
+      "viral.newSubs": "신규 구독자",
+      "viral.sharesSent": "발송된 공유 수",
+      "viral.cumulative": "누적",
+
+      "about.title": "모델 소개",
+      "about.intro":
+        "앱 사용자 기반의 시간에 따른 변화를 예측하는 두 가지 고전적인 그로스 해킹 모델입니다. 획득 채널, 바이럴리티, 리텐션을 입력해 상호작용을 살펴보세요.",
+      "about.simpleH": "단순 이탈",
+      "about.simpleP":
+        "매월 기존 사용자 기반의 일정 비율이 이탈합니다. 바이럴은 <code>viral[m] = gross_growth[m-1] × k</code>로 모델링되며, 즉 지난달 신규 사용자들이 친구를 초대하는 형태입니다. 빠른 추정에 유용하지만, 실제 리텐션이 일정한 비율인 경우는 드뭅니다.",
+      "about.curvesH": "리텐션 & 바이럴 곡선",
+      "about.curvesP1":
+        "코호트 기반입니다. 각 획득 코호트는 설정된 리텐션 곡선을 따라 잔존하며, 매월 감쇠하는 바이럴 효과를 만들어냅니다. 매월 시작 시 사용자는 모든 이전 코호트를 리텐션으로 가중한 합입니다:",
+      "about.curvesP2":
+        "7개월 이후에는 6개월차 리텐션을 정상 상태 하한으로 사용합니다. 바이럴 팩터는 6개월 이후 기하급수적으로 감쇠합니다.",
+      "about.viralH": "바이럴 계수",
+      "about.viralP":
+        "사이클별 지수 모델입니다. <code>K = 참여율 × i × c</code>이며, 여기서 <em>i</em>는 활성 공유자 1인당 평균 공유 수, <em>c</em>는 공유당 전환율입니다. 사이클 <em>n</em>의 신규 구독자는 <code>seed × Kⁿ</code>; <em>N</em> 사이클 후 누적 구독자는 <code>seed × (K^(N+1) − 1) / (K − 1)</code>입니다.",
+      "about.viralKlt1":
+        "<strong>K &lt; 1</strong>: 성장이 감쇠합니다. 무한 시간에서의 이론적 최대 도달은 <code>seed / (1 − K)</code>입니다.",
+      "about.viralKeq1":
+        "<strong>K = 1</strong>: 각 사이클마다 동일한 수의 사용자가 추가됩니다 (선형 성장, 한계 없음).",
+      "about.viralKgt1":
+        "<strong>K &gt; 1</strong>: 순수 지수 성장. 실제로는 포화와 감쇠가 함께 작동하므로, 더 현실적인 예측을 위해 위의 리텐션 곡선과 결합해서 사용하세요.",
+      "about.notesH": "참고",
+      "about.note1":
+        "모든 값은 실시간으로 재계산됩니다 — \"계산\" 버튼이 없습니다. 입력을 변경하면 차트와 표가 즉시 업데이트됩니다.",
+      "about.note2":
+        "표의 숫자는 표시용으로 반올림되지만, 내부 계산은 소수로 처리되므로 합계가 정확히 맞춰집니다.",
+      "about.note3":
+        "변수 열 하단의 <em>예측할 개월 수</em> 입력으로 예측 기간을 늘릴 수 있습니다.",
+    },
+  };
+
+  const STORAGE_KEY = "growthcalc.lang";
+  let currentLang =
+    localStorage.getItem(STORAGE_KEY) === "ko" ? "ko" : "en";
+
+  function t(key) {
+    return TRANSLATIONS[currentLang][key] ?? TRANSLATIONS.en[key] ?? key;
+  }
+
+  function applyTranslations() {
+    document.documentElement.setAttribute("lang", currentLang);
+
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      const value = t(key);
+      const attrName = el.getAttribute("data-i18n-attr");
+      if (attrName) {
+        el.setAttribute(attrName, value);
+      } else {
+        el.innerHTML = value;
+      }
+    });
+
+    document.querySelectorAll(".lang").forEach((btn) => {
+      btn.classList.toggle("is-active", btn.dataset.lang === currentLang);
+    });
+  }
+
   // ---------- Helpers ----------
 
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -292,7 +588,7 @@
     },
     scales: {
       x: {
-        title: { display: true, text: "Month" },
+        title: { display: true, text: t("cols.month") },
         grid: { color: "rgba(0,0,0,0.04)" },
       },
       y: {
@@ -309,10 +605,13 @@
     const ctx = document.getElementById(canvasId).getContext("2d");
     const labels = rows.map((r) => r.month);
     const data = rows.map((r) => r.usersStart);
+    const datasetLabel = t("cards.users");
 
     if (charts[key]) {
       charts[key].data.labels = labels;
       charts[key].data.datasets[0].data = data;
+      charts[key].data.datasets[0].label = datasetLabel;
+      charts[key].options.scales.x.title.text = t("cols.month");
       charts[key].update();
       return;
     }
@@ -322,7 +621,7 @@
         labels,
         datasets: [
           {
-            label: "Users (month start)",
+            label: datasetLabel,
             data,
             borderColor: COLORS.users,
             backgroundColor: COLORS.users + "22",
@@ -343,31 +642,31 @@
 
     const datasets = [
       {
-        label: "Launch press",
+        label: t("cols.launch"),
         data: rows.map((r) => r.launch),
         borderColor: COLORS.launch,
         backgroundColor: COLORS.launch + "22",
       },
       {
-        label: "App store",
+        label: t("cols.appstore"),
         data: rows.map((r) => r.appstore),
         borderColor: COLORS.appstore,
         backgroundColor: COLORS.appstore + "22",
       },
       {
-        label: "Direct traffic",
+        label: t("cols.direct"),
         data: rows.map((r) => r.direct),
         borderColor: COLORS.direct,
         backgroundColor: COLORS.direct + "22",
       },
       {
-        label: "Viral growth",
+        label: t("cols.viral"),
         data: rows.map((r) => r.viral),
         borderColor: COLORS.viral,
         backgroundColor: COLORS.viral + "22",
       },
       {
-        label: "Loss",
+        label: t("cols.loss"),
         data: rows.map((r) => -r.loss),
         borderColor: COLORS.loss,
         backgroundColor: COLORS.loss + "22",
@@ -385,7 +684,9 @@
       charts[key].data.labels = labels;
       charts[key].data.datasets.forEach((ds, i) => {
         ds.data = datasets[i].data;
+        ds.label = datasets[i].label;
       });
+      charts[key].options.scales.x.title.text = t("cols.month");
       charts[key].update();
       return;
     }
@@ -402,22 +703,26 @@
       .getContext("2d");
     const labels = rows.map((r) => r.cycle);
     const data = rows.map((r) => r.newUsers);
+    const datasetLabel = t("viral.newSubs");
+    const axisLabel = t("viral.cycle");
 
     if (charts.viralPerCycle) {
       charts.viralPerCycle.data.labels = labels;
       charts.viralPerCycle.data.datasets[0].data = data;
+      charts.viralPerCycle.data.datasets[0].label = datasetLabel;
+      charts.viralPerCycle.options.scales.x.title.text = axisLabel;
       charts.viralPerCycle.update();
       return;
     }
     const opts = baseChartOpts();
-    opts.scales.x.title.text = "Cycle";
+    opts.scales.x.title.text = axisLabel;
     charts.viralPerCycle = new Chart(ctx, {
       type: "bar",
       data: {
         labels,
         datasets: [
           {
-            label: "New subscribers",
+            label: datasetLabel,
             data,
             backgroundColor: COLORS.viral + "cc",
             borderColor: COLORS.viral,
@@ -435,22 +740,26 @@
       .getContext("2d");
     const labels = rows.map((r) => r.cycle);
     const data = rows.map((r) => r.cumulative);
+    const datasetLabel = t("viral.cumulativeChart");
+    const axisLabel = t("viral.cycle");
 
     if (charts.viralCumulative) {
       charts.viralCumulative.data.labels = labels;
       charts.viralCumulative.data.datasets[0].data = data;
+      charts.viralCumulative.data.datasets[0].label = datasetLabel;
+      charts.viralCumulative.options.scales.x.title.text = axisLabel;
       charts.viralCumulative.update();
       return;
     }
     const opts = baseChartOpts();
-    opts.scales.x.title.text = "Cycle";
+    opts.scales.x.title.text = axisLabel;
     charts.viralCumulative = new Chart(ctx, {
       type: "line",
       data: {
         labels,
         datasets: [
           {
-            label: "Cumulative subscribers",
+            label: datasetLabel,
             data,
             borderColor: COLORS.users,
             backgroundColor: COLORS.users + "22",
@@ -637,9 +946,9 @@
     else kpiK.classList.add("is-accent");
 
     let kHint;
-    if (result.K > 1) kHint = "Exponential growth";
-    else if (result.K === 1) kHint = "Linear growth";
-    else kHint = "Decaying — bounded reach";
+    if (result.K > 1) kHint = t("viral.regimeExp");
+    else if (result.K === 1) kHint = t("viral.regimeLin");
+    else kHint = t("viral.regimeDec");
     setOutput("v_kpiKHint", kHint);
 
     const total = result.rows[result.rows.length - 1]?.cumulative ?? seed;
@@ -650,10 +959,10 @@
 
     if (isFinite(result.ceiling)) {
       setOutput("v_kpiCeiling", fmtInt(result.ceiling));
-      setOutput("v_kpiCeilingHint", `seed / (1 − K)`);
+      setOutput("v_kpiCeilingHint", t("viral.kpiCeilingBounded"));
     } else {
       setOutput("v_kpiCeiling", "∞");
-      setOutput("v_kpiCeilingHint", "Unbounded (K ≥ 1)");
+      setOutput("v_kpiCeilingHint", t("viral.kpiCeilingUnbounded"));
     }
 
     ensureViralPerCycleChart(result.rows);
@@ -674,7 +983,24 @@
   attachInputs("c_", recomputeCurves);
   attachInputs("v_", recomputeViral);
 
+  // Language switcher.
+  document.querySelectorAll(".lang").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const lang = btn.dataset.lang;
+      if (lang === currentLang) return;
+      currentLang = lang;
+      localStorage.setItem(STORAGE_KEY, lang);
+      applyTranslations();
+      // Re-render outputs so chart labels, KPI hints, and table-derived
+      // text pick up the new locale.
+      recomputeSimple();
+      recomputeCurves();
+      recomputeViral();
+    });
+  });
+
   // Initial render.
+  applyTranslations();
   recomputeSimple();
   recomputeCurves();
   recomputeViral();
