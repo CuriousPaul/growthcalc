@@ -84,6 +84,39 @@
       ></div>
     </header>
 
+    <div class="presetbar">
+      <div class="presetbar-inner">
+        <label class="preset-label" for="presetSelect">
+          <span data-i18n="preset.label">Industry preset</span>
+        </label>
+        <select id="presetSelect" class="preset-select">
+          <option value="custom" data-i18n="preset.custom">Custom</option>
+          <option value="saas" data-i18n="preset.saas">B2B SaaS</option>
+          <option value="mobileApp" data-i18n="preset.mobileApp">
+            Consumer Mobile App
+          </option>
+          <option value="game" data-i18n="preset.game">Mobile Game</option>
+          <option value="ecommerce" data-i18n="preset.ecommerce">
+            E-commerce
+          </option>
+          <option value="social" data-i18n="preset.social">Social / UGC</option>
+          <option value="fintech" data-i18n="preset.fintech">Fintech</option>
+        </select>
+        <a
+          id="presetSource"
+          class="preset-source"
+          href="#"
+          target="_blank"
+          rel="noopener"
+          hidden
+          data-i18n="preset.source"
+        >
+          Source ↗
+        </a>
+        <span class="preset-note" id="presetNote"></span>
+      </div>
+    </div>
+
     <main class="page">
       <!-- ============== SIMPLE LOSS MODEL ============== -->
       <section class="model" id="tab-simple" role="tabpanel">

@@ -19,6 +19,28 @@
       "share.copied": "Link copied to clipboard",
       "share.failed": "Couldn't copy — copy from the address bar instead",
 
+      "preset.label": "Industry preset",
+      "preset.source": "Source ↗",
+      "preset.custom": "Custom",
+      "preset.saas": "B2B SaaS",
+      "preset.mobileApp": "Consumer Mobile App",
+      "preset.game": "Mobile Game",
+      "preset.ecommerce": "E-commerce",
+      "preset.social": "Social / UGC",
+      "preset.fintech": "Fintech",
+      "preset.note.saas":
+        "OpenView 2024 SaaS Benchmarks + Mixpanel product benchmarks. Mid-market B2B.",
+      "preset.note.mobileApp":
+        "AppsFlyer State of App Marketing 2024 + data.ai 2024. Non-gaming consumer apps.",
+      "preset.note.game":
+        "GameAnalytics + AppsFlyer Gaming 2024. Mid-core mobile game.",
+      "preset.note.ecommerce":
+        "Klaviyo + Shopify 2024 retention benchmarks. DTC / mid-market.",
+      "preset.note.social":
+        "Mixpanel Product Benchmarks + public Meta/Snap/TikTok disclosures.",
+      "preset.note.fintech":
+        "Adjust Fintech 2024 + OpenView Fintech tracker.",
+
       "vars.title": "Variables",
       "vars.launch": "Launch press",
       "vars.launchUsers": "One-time launch users",
@@ -155,6 +177,28 @@
       "share.button": "공유",
       "share.copied": "링크가 복사되었습니다",
       "share.failed": "복사에 실패했어요 — 주소창에서 직접 복사해 주세요",
+
+      "preset.label": "업종 프리셋",
+      "preset.source": "출처 ↗",
+      "preset.custom": "사용자 정의",
+      "preset.saas": "B2B SaaS",
+      "preset.mobileApp": "소비자 모바일 앱",
+      "preset.game": "모바일 게임",
+      "preset.ecommerce": "이커머스",
+      "preset.social": "소셜 / UGC",
+      "preset.fintech": "핀테크",
+      "preset.note.saas":
+        "OpenView 2024 SaaS Benchmarks + Mixpanel 제품 벤치마크. 중견 B2B 기준.",
+      "preset.note.mobileApp":
+        "AppsFlyer State of App Marketing 2024 + data.ai 2024. 비게임 소비자 앱.",
+      "preset.note.game":
+        "GameAnalytics + AppsFlyer Gaming 2024. 미드코어 모바일 게임 기준.",
+      "preset.note.ecommerce":
+        "Klaviyo + Shopify 2024 리텐션 벤치마크. DTC / 중견 기준.",
+      "preset.note.social":
+        "Mixpanel 제품 벤치마크 + Meta/Snap/TikTok 공개 자료 종합.",
+      "preset.note.fintech":
+        "Adjust Fintech 2024 + OpenView Fintech 트래커.",
 
       "vars.title": "변수",
       "vars.launch": "런칭 홍보",
@@ -305,6 +349,297 @@
     });
   }
 
+  // ---------- Industry presets ----------
+  //
+  // Each preset fills every input across all three calculators with a
+  // representative mid-range value drawn from the cited public benchmark
+  // report. Numbers are rounded for legibility — they're starting points,
+  // not commitments. The user can edit any field; the dropdown then
+  // automatically switches to "Custom" so the citation doesn't lie.
+  //
+  // Sources are labeled with the publication year. We deliberately don't
+  // claim "2025 official" since most public benchmark reports are
+  // published with a one-year lag; the ranges shift slowly enough that
+  // 2024 reports are still the most authoritative reference today.
+
+  const PRESETS = {
+    saas: {
+      noteKey: "preset.note.saas",
+      sourceUrl: "https://openviewpartners.com/blog/saas-benchmarks-report/",
+      values: {
+        // Simple Loss
+        s_launch: 500,
+        s_appDownloads: 0,
+        s_appActivate: 30,
+        s_directDownloads: 800,
+        s_directActivate: 35,
+        s_viral: 0.09,
+        s_loss: 4,
+        s_months: 12,
+        // Curves
+        c_launch: 500,
+        c_appDownloads: 1000,
+        c_appActivate: 30,
+        c_directDownloads: 2000,
+        c_directActivate: 35,
+        c_participation: 15,
+        c_shares: 2,
+        c_conversion: 30,
+        c_viralDecay: 0.6,
+        c_ret1: 90,
+        c_ret2: 85,
+        c_ret3: 80,
+        c_ret4: 77,
+        c_ret5: 74,
+        c_ret6: 70,
+        c_months: 12,
+        // Viral coefficient
+        v_seed: 500,
+        v_participation: 15,
+        v_shares: 2,
+        v_conversion: 30,
+        v_cycleDays: 14,
+        v_totalDays: 90,
+      },
+    },
+
+    mobileApp: {
+      noteKey: "preset.note.mobileApp",
+      sourceUrl:
+        "https://www.appsflyer.com/resources/reports/state-of-app-marketing/",
+      values: {
+        s_launch: 5000,
+        s_appDownloads: 8000,
+        s_appActivate: 55,
+        s_directDownloads: 2000,
+        s_directActivate: 50,
+        s_viral: 0.18,
+        s_loss: 55,
+        s_months: 12,
+        c_launch: 5000,
+        c_appDownloads: 8000,
+        c_appActivate: 55,
+        c_directDownloads: 4000,
+        c_directActivate: 50,
+        c_participation: 25,
+        c_shares: 3,
+        c_conversion: 18,
+        c_viralDecay: 0.5,
+        c_ret1: 30,
+        c_ret2: 18,
+        c_ret3: 12,
+        c_ret4: 9,
+        c_ret5: 7,
+        c_ret6: 5,
+        c_months: 12,
+        v_seed: 5000,
+        v_participation: 25,
+        v_shares: 3,
+        v_conversion: 18,
+        v_cycleDays: 7,
+        v_totalDays: 60,
+      },
+    },
+
+    game: {
+      noteKey: "preset.note.game",
+      sourceUrl:
+        "https://gameanalytics.com/reports/mobile-gaming-industry-analysis/",
+      values: {
+        s_launch: 10000,
+        s_appDownloads: 15000,
+        s_appActivate: 70,
+        s_directDownloads: 3000,
+        s_directActivate: 65,
+        s_viral: 0.075,
+        s_loss: 70,
+        s_months: 12,
+        c_launch: 10000,
+        c_appDownloads: 15000,
+        c_appActivate: 70,
+        c_directDownloads: 5000,
+        c_directActivate: 65,
+        c_participation: 25,
+        c_shares: 2.5,
+        c_conversion: 12,
+        c_viralDecay: 0.4,
+        c_ret1: 35,
+        c_ret2: 20,
+        c_ret3: 13,
+        c_ret4: 9,
+        c_ret5: 6,
+        c_ret6: 4,
+        c_months: 12,
+        v_seed: 10000,
+        v_participation: 25,
+        v_shares: 2.5,
+        v_conversion: 12,
+        v_cycleDays: 5,
+        v_totalDays: 30,
+      },
+    },
+
+    ecommerce: {
+      noteKey: "preset.note.ecommerce",
+      sourceUrl: "https://www.klaviyo.com/marketing-resources/benchmarks",
+      values: {
+        s_launch: 2000,
+        s_appDownloads: 0,
+        s_appActivate: 25,
+        s_directDownloads: 8000,
+        s_directActivate: 25,
+        s_viral: 0.04,
+        s_loss: 65,
+        s_months: 12,
+        c_launch: 2000,
+        c_appDownloads: 3000,
+        c_appActivate: 30,
+        c_directDownloads: 12000,
+        c_directActivate: 25,
+        c_participation: 12,
+        c_shares: 1.5,
+        c_conversion: 18,
+        c_viralDecay: 0.45,
+        c_ret1: 25,
+        c_ret2: 18,
+        c_ret3: 15,
+        c_ret4: 13,
+        c_ret5: 12,
+        c_ret6: 10,
+        c_months: 12,
+        v_seed: 2000,
+        v_participation: 12,
+        v_shares: 1.5,
+        v_conversion: 18,
+        v_cycleDays: 14,
+        v_totalDays: 60,
+      },
+    },
+
+    social: {
+      noteKey: "preset.note.social",
+      sourceUrl: "https://mixpanel.com/blog/product-benchmarks/",
+      values: {
+        s_launch: 8000,
+        s_appDownloads: 20000,
+        s_appActivate: 70,
+        s_directDownloads: 5000,
+        s_directActivate: 65,
+        s_viral: 0.35,
+        s_loss: 35,
+        s_months: 12,
+        c_launch: 8000,
+        c_appDownloads: 20000,
+        c_appActivate: 70,
+        c_directDownloads: 8000,
+        c_directActivate: 65,
+        c_participation: 35,
+        c_shares: 4,
+        c_conversion: 25,
+        c_viralDecay: 0.55,
+        c_ret1: 50,
+        c_ret2: 35,
+        c_ret3: 27,
+        c_ret4: 22,
+        c_ret5: 19,
+        c_ret6: 16,
+        c_months: 12,
+        v_seed: 8000,
+        v_participation: 35,
+        v_shares: 4,
+        v_conversion: 25,
+        v_cycleDays: 3,
+        v_totalDays: 30,
+      },
+    },
+
+    fintech: {
+      noteKey: "preset.note.fintech",
+      sourceUrl: "https://www.adjust.com/resources/ebooks/",
+      values: {
+        s_launch: 3000,
+        s_appDownloads: 4000,
+        s_appActivate: 20,
+        s_directDownloads: 1500,
+        s_directActivate: 25,
+        s_viral: 0.12,
+        s_loss: 8,
+        s_months: 12,
+        c_launch: 3000,
+        c_appDownloads: 4000,
+        c_appActivate: 20,
+        c_directDownloads: 2000,
+        c_directActivate: 25,
+        c_participation: 20,
+        c_shares: 2,
+        c_conversion: 30,
+        c_viralDecay: 0.55,
+        c_ret1: 75,
+        c_ret2: 65,
+        c_ret3: 58,
+        c_ret4: 53,
+        c_ret5: 49,
+        c_ret6: 45,
+        c_months: 12,
+        v_seed: 3000,
+        v_participation: 20,
+        v_shares: 2,
+        v_conversion: 30,
+        v_cycleDays: 14,
+        v_totalDays: 90,
+      },
+    },
+  };
+
+  let currentPreset = "custom";
+  // Set true while we're programmatically setting input values from a
+  // preset, so the input event handler doesn't immediately flip back to
+  // "Custom".
+  let applyingPreset = false;
+
+  function updatePresetUI() {
+    const select = document.getElementById("presetSelect");
+    if (select) select.value = currentPreset;
+
+    const link = document.getElementById("presetSource");
+    const note = document.getElementById("presetNote");
+    const preset = PRESETS[currentPreset];
+    if (preset && link) {
+      link.href = preset.sourceUrl;
+      link.hidden = false;
+    } else if (link) {
+      link.removeAttribute("href");
+      link.hidden = true;
+    }
+    if (note) {
+      note.textContent = preset ? t(preset.noteKey) : "";
+    }
+  }
+
+  function applyPreset(name, opts = {}) {
+    const preset = PRESETS[name];
+    if (!preset) {
+      currentPreset = "custom";
+      updatePresetUI();
+      if (opts.syncURL !== false) syncStateToURL();
+      return;
+    }
+    applyingPreset = true;
+    Object.entries(preset.values).forEach(([key, value]) => {
+      const el = document.querySelector(`[data-input="${key}"]`);
+      if (el) el.value = value;
+    });
+    applyingPreset = false;
+    currentPreset = name;
+    updatePresetUI();
+    if (opts.recompute !== false) {
+      recomputeSimple();
+      recomputeCurves();
+      recomputeViral();
+    }
+    if (opts.syncURL !== false) syncStateToURL();
+  }
+
   // ---------- URL state sync ----------
   //
   // Every input value, the active tab, and the active language are mirrored
@@ -323,6 +658,7 @@
     const params = new URLSearchParams();
     params.set("lang", currentLang);
     params.set("tab", activeTab);
+    params.set("preset", currentPreset);
     getInputs().forEach((el) => {
       params.set(el.dataset.input, el.value);
     });
@@ -342,6 +678,22 @@
     const validTabs = ["simple", "curves", "viral", "about"];
     if (tabParam && validTabs.includes(tabParam)) {
       activeTab = tabParam;
+    }
+
+    // Preset: if a recognized preset name is in the URL, apply its values
+    // first. Individual values from the URL then override only the
+    // specific fields the sender tweaked. This keeps shared links small
+    // (just preset=saas) while still preserving any custom edits.
+    const presetParam = params.get("preset");
+    if (presetParam && PRESETS[presetParam]) {
+      currentPreset = presetParam;
+      const preset = PRESETS[presetParam];
+      Object.entries(preset.values).forEach(([key, value]) => {
+        const el = document.querySelector(`[data-input="${key}"]`);
+        if (el) el.value = value;
+      });
+    } else {
+      currentPreset = "custom";
     }
 
     getInputs().forEach((el) => {
@@ -1072,6 +1424,11 @@
     $$(`[data-input^="${prefix}"]`).forEach((el) => {
       const handler = () => {
         recompute();
+        if (!applyingPreset && currentPreset !== "custom") {
+          // User manually edited a preset value — drop the citation.
+          currentPreset = "custom";
+          updatePresetUI();
+        }
         syncStateToURL();
       };
       el.addEventListener("input", handler);
@@ -1105,11 +1462,22 @@
     btn.addEventListener("click", copyShareLink);
   });
 
-  // Initial render: read URL state first so inputs, lang, and tab match
-  // the shared link before anything is computed or drawn.
+  // Industry preset dropdown.
+  const presetSelect = document.getElementById("presetSelect");
+  if (presetSelect) {
+    presetSelect.addEventListener("change", (e) => {
+      applyPreset(e.target.value);
+    });
+  }
+
+  // Initial render: read URL state first so inputs, lang, tab, and
+  // preset match the shared link before anything is computed or drawn.
   applyStateFromURL();
   setActiveTab(activeTab);
   applyTranslations();
+  // applyTranslations rewrites <option> labels; sync the dropdown's
+  // selected value and source link based on the URL-derived preset.
+  updatePresetUI();
   recomputeSimple();
   recomputeCurves();
   recomputeViral();
