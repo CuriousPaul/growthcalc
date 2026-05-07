@@ -229,6 +229,13 @@ body {
   .model-grid {
     grid-template-columns: 1fr;
   }
+
+  /* When stacked, the variables panel sits above the output — sticky no
+     longer makes sense and would just trap the user at the top. */
+  .vars {
+    position: static;
+    max-height: none;
+  }
 }
 
 /* ===== Variables (left column) ===== */
@@ -524,4 +531,150 @@ td.muted {
 
 .about ul {
   padding-left: 20px;
+}
+
+/* ===================================================================
+ * Mobile responsive
+ *
+ * Breakpoints:
+ *   980px  - already handled above (single-column layout, unstick vars)
+ *   760px  - topbar wraps: tabs become a horizontally-scrollable row
+ *   480px  - phone-sized: tighter paddings, single-column KPIs,
+ *            shorter charts, slightly smaller headings
+ * =================================================================== */
+
+@media (max-width: 760px) {
+  .topbar-inner {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+    padding: 12px 16px;
+  }
+
+  .brand {
+    order: 1;
+  }
+
+  .share-btn {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .lang-switch {
+    order: 3;
+    margin-left: 0;
+  }
+
+  /* Tabs slide to a full-width second row, scrollable horizontally so
+     the four labels never need to wrap or shrink awkwardly. */
+  .tabs {
+    order: 4;
+    flex-basis: 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrollbar: none;
+    scrollbar-width: none;
+    /* Hint the iOS momentum scroller. */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Toast was anchored under a single-row topbar at 72px; with a wrapped
+     header the topbar is taller and the toast collides with the tabs.
+     Anchor it to the bottom of the viewport instead. */
+  .toast {
+    top: auto;
+    bottom: 24px;
+  }
+
+  .page {
+    padding: 16px;
+  }
+
+  .model-head h1 {
+    font-size: 19px;
+  }
+
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar-inner {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .brand-name {
+    font-size: 15px;
+  }
+
+  .page {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .vars {
+    padding: 14px 14px 6px;
+  }
+
+  .about {
+    padding: 18px;
+  }
+
+  .model-head h1 {
+    font-size: 18px;
+  }
+
+  .model-head {
+    margin-bottom: 14px;
+  }
+
+  /* Stack KPI cards vertically when there's not enough width to keep
+     two readable. */
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+  }
+
+  /* Charts shrink to keep the table close enough to compare on a phone. */
+  .chart-wrap {
+    height: 240px;
+  }
+
+  /* Variable rows: keep the input on the right but let the label wrap
+     instead of clipping when translations are long. */
+  .vars label > span {
+    font-size: 12.5px;
+  }
+
+  .vars input[type="number"],
+  .vars label.readonly output {
+    width: 88px;
+    /* iOS Safari auto-zooms on focus when font-size < 16px. Bumping to
+       16px on phones keeps the layout stable when the keyboard opens. */
+    font-size: 16px;
+  }
+
+  /* Tighter table cells for narrow viewports. The wrapper still scrolls
+     horizontally, so columns aren't dropped. */
+  th,
+  td {
+    padding: 6px 8px;
+    font-size: 12.5px;
+  }
 }
