@@ -533,7 +533,12 @@
     const directDownloads = num("c_directDownloads");
     const directActivate = num("c_directActivate") / 100;
     const viralDecay = num("c_viralDecay");
-    const v1 = num("c_viral1");
+    // Viral factor month 1 is K = participation × i × c, the standard
+    // viral coefficient. Subsequent months decay geometrically.
+    const participation = num("c_participation") / 100;
+    const sharesPerUser = num("c_shares");
+    const conversion = num("c_conversion") / 100;
+    const v1 = participation * sharesPerUser * conversion;
 
     const retention = [
       num("c_ret1") / 100,
@@ -563,6 +568,7 @@
 
     setOutput("c_appNet", fmtInt(appstore));
     setOutput("c_directNet", fmtInt(direct));
+    setOutput("c_viral1", fmtFactor(viral[0]));
     setOutput("c_viral2", fmtFactor(viral[1]));
     setOutput("c_viral3", fmtFactor(viral[2]));
     setOutput("c_viral4", fmtFactor(viral[3]));

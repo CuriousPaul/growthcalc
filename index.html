@@ -306,6 +306,44 @@
             <fieldset>
               <legend>Virality (decay curve)</legend>
               <label>
+                <span>% of users who share</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_participation"
+                  value="40"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label>
+                <span>Avg shares per sharer (i)</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  data-input="c_shares"
+                  value="2.5"
+                />
+              </label>
+              <label>
+                <span>Conversion per share (c)</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  data-input="c_conversion"
+                  value="20"
+                />
+                <em class="suffix">%</em>
+              </label>
+              <label class="readonly highlight">
+                <span>Viral factor month 1 (K)</span>
+                <output data-output="c_viral1">0.20</output>
+              </label>
+              <label>
                 <span>Viral factor decay</span>
                 <input
                   type="number"
@@ -314,16 +352,6 @@
                   step="0.01"
                   data-input="c_viralDecay"
                   value="0.50"
-                />
-              </label>
-              <label>
-                <span>Viral factor month 1</span>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  data-input="c_viral1"
-                  value="0.20"
                 />
               </label>
               <label class="readonly">
