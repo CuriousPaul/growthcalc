@@ -62,11 +62,26 @@
             About
           </button>
         </nav>
+        <button
+          class="share-btn"
+          type="button"
+          data-action="share"
+          data-i18n="share.button"
+        >
+          Share
+        </button>
         <div class="lang-switch" role="group" aria-label="Language">
           <button class="lang is-active" data-lang="en">EN</button>
           <button class="lang" data-lang="ko">한국어</button>
         </div>
       </div>
+      <div
+        class="toast"
+        id="toast"
+        role="status"
+        aria-live="polite"
+        aria-hidden="true"
+      ></div>
     </header>
 
     <main class="page">

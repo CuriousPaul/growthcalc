@@ -76,14 +76,70 @@ body {
   margin-left: auto;
 }
 
+.share-btn {
+  appearance: none;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 16px;
+  transition: filter 100ms ease, transform 80ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.share-btn::before {
+  content: "↗";
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.share-btn:hover {
+  filter: brightness(1.05);
+}
+
+.share-btn:active {
+  transform: translateY(1px);
+}
+
 .lang-switch {
   display: flex;
   gap: 2px;
-  margin-left: 12px;
+  margin-left: 8px;
   padding: 2px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
+}
+
+.toast {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  transform: translate(-50%, -8px);
+  background: var(--text);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(20, 30, 60, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+  z-index: 50;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 .lang {

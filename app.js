@@ -15,6 +15,10 @@
       "tabs.viral": "Viral Coefficient",
       "tabs.about": "About",
 
+      "share.button": "Share",
+      "share.copied": "Link copied to clipboard",
+      "share.failed": "Couldn't copy — copy from the address bar instead",
+
       "vars.title": "Variables",
       "vars.launch": "Launch press",
       "vars.launchUsers": "One-time launch users",
@@ -147,6 +151,10 @@
       "tabs.curves": "리텐션 & 바이럴 곡선",
       "tabs.viral": "바이럴 계수",
       "tabs.about": "소개",
+
+      "share.button": "공유",
+      "share.copied": "링크가 복사되었습니다",
+      "share.failed": "복사에 실패했어요 — 주소창에서 직접 복사해 주세요",
 
       "vars.title": "변수",
       "vars.launch": "런칭 홍보",
@@ -297,6 +305,101 @@
     });
   }
 
+  // ---------- URL state sync ----------
+  //
+  // Every input value, the active tab, and the active language are mirrored
+  // into the URL via history.replaceState so that the address bar always
+  // contains a shareable snapshot. On load we read the URL back into the
+  // form before any recompute, so that opening a shared link reproduces the
+  // exact view the sender saw.
+
+  let activeTab = "simple";
+
+  function getInputs() {
+    return document.querySelectorAll("[data-input]");
+  }
+
+  function syncStateToURL() {
+    const params = new URLSearchParams();
+    params.set("lang", currentLang);
+    params.set("tab", activeTab);
+    getInputs().forEach((el) => {
+      params.set(el.dataset.input, el.value);
+    });
+    const url = `${location.pathname}?${params.toString()}`;
+    history.replaceState(null, "", url);
+  }
+
+  function applyStateFromURL() {
+    const params = new URLSearchParams(location.search);
+
+    const langParam = params.get("lang");
+    if (langParam === "ko" || langParam === "en") {
+      currentLang = langParam;
+    }
+
+    const tabParam = params.get("tab");
+    const validTabs = ["simple", "curves", "viral", "about"];
+    if (tabParam && validTabs.includes(tabParam)) {
+      activeTab = tabParam;
+    }
+
+    getInputs().forEach((el) => {
+      const v = params.get(el.dataset.input);
+      if (v !== null && v !== "") el.value = v;
+    });
+  }
+
+  function setActiveTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll(".tab").forEach((t) => {
+      const isActive = t.dataset.tab === tab;
+      t.classList.toggle("is-active", isActive);
+      t.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+    document.querySelectorAll(".model").forEach((m) => {
+      m.classList.toggle("is-hidden", m.id !== `tab-${tab}`);
+    });
+  }
+
+  let toastTimer = null;
+  function showToast(message) {
+    const el = document.getElementById("toast");
+    if (!el) return;
+    el.textContent = message;
+    el.classList.add("is-visible");
+    el.setAttribute("aria-hidden", "false");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      el.classList.remove("is-visible");
+      el.setAttribute("aria-hidden", "true");
+    }, 2000);
+  }
+
+  async function copyShareLink() {
+    syncStateToURL(); // ensure URL is fresh before copying
+    const url = location.href;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        // Fallback for non-secure contexts (e.g. http:// preview).
+        const ta = document.createElement("textarea");
+        ta.value = url;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (!ok) throw new Error("execCommand failed");
+      }
+      showToast(t("share.copied"));
+    } catch (e) {
+      showToast(t("share.failed"));
+    }
+  }
+
   // ---------- Helpers ----------
 
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -340,17 +443,10 @@
 
   $$(".tab").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const target = btn.dataset.tab;
-      $$(".tab").forEach((t) => {
-        const active = t.dataset.tab === target;
-        t.classList.toggle("is-active", active);
-        t.setAttribute("aria-selected", active ? "true" : "false");
-      });
-      $$(".model").forEach((m) => {
-        m.classList.toggle("is-hidden", m.id !== `tab-${target}`);
-      });
+      setActiveTab(btn.dataset.tab);
       // Charts can mis-size if hidden when first drawn; ask them to resize.
       Object.values(charts).forEach((c) => c && c.resize());
+      syncStateToURL();
     });
   });
 
@@ -974,8 +1070,12 @@
 
   function attachInputs(prefix, recompute) {
     $$(`[data-input^="${prefix}"]`).forEach((el) => {
-      el.addEventListener("input", recompute);
-      el.addEventListener("change", recompute);
+      const handler = () => {
+        recompute();
+        syncStateToURL();
+      };
+      el.addEventListener("input", handler);
+      el.addEventListener("change", handler);
     });
   }
 
@@ -996,12 +1096,22 @@
       recomputeSimple();
       recomputeCurves();
       recomputeViral();
+      syncStateToURL();
     });
   });
 
-  // Initial render.
+  // Share button.
+  document.querySelectorAll('[data-action="share"]').forEach((btn) => {
+    btn.addEventListener("click", copyShareLink);
+  });
+
+  // Initial render: read URL state first so inputs, lang, and tab match
+  // the shared link before anything is computed or drawn.
+  applyStateFromURL();
+  setActiveTab(activeTab);
   applyTranslations();
   recomputeSimple();
   recomputeCurves();
   recomputeViral();
+  syncStateToURL();
 })();
